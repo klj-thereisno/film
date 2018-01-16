@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"></meta>
+<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.5.3/themes/default/easyui.css"></link>
+<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.5.3/themes/icon.css"></link>
+<script type="text/javascript" src="/static/jquery-easyui-1.5.3/jquery.min.js"></script>
+<script type="text/javascript" src="/static/jquery-easyui-1.5.3/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/static/jquery-easyui-1.5.3/locale/easyui-lang-zh_CN.js"></script>
+<script link="text/javascript">
+	
+	$(function(){
+		$('#s_name').textbox('textbox').bind('keydown', function(e){
+			if (e.keyCode == 13)	// when press ENTER key, accept the inputed value.
+				search();
+		});
+		$("#dg").datagrid({
+			onDblClickRow:function(a,b){
+				id = b.id;
+				$("#dlg").dialog("open").dialog("setTitle","友情链接修改");
+				$("#fm").form("load",b);
+			}
+		});
+	});
+	
+	function edit(){
+		var rows = $("#dg").datagrid("getSelections");
+		if(!rows.length){
+			$.messager.alert("提示","请选择要修改的友情链接","info");
+			return;
+		}
+		id = rows[0].id;
+		$("#dlg").dialog("open").dialog("setTitle","友情链接修改");
+		$("#fm").form("load",rows[0]);
+	}
+
+	function search(){
+		$("#dg").datagrid("load",{
+			name:$("[name=s_name]").val().trim()
+		});
+	}
+
+	var id = "";
+
+	$(function(){
+		
+	});
+	
+	function forUrl(val, row){
+		return "<a target='_blank' href='" + val + "'>" + val + "</a>";
+	}
+	
+	function add(){
+		$("#dlg").dialog("open").dialog("setTitle","友情链接新增");
+		id = 0;
+	}
+	
+	function save(){
+		$("#fm").form("submit",{
+			url:'../admin/link/' + id,
+            onSubmit:function(){
+                return $(this).form('enableValidation').form('validate');
+            },
+			success:function(r){
+				console.log(r);
+				if(r){
+					if(id == 0)
+						$.messager.alert("提示","新增成功","info");
+					else
+						$.messager.alert("提示","修改成功","info");
+				}else
+					$.messager.alert("提示","错误，请联系管理员","error");
+				cancel();
+			}
+		});
+	}
+	
+	function cancel(){
+		$("#dlg").dialog("close");
+		$("#fm").form("clear");
+		$("#dg").datagrid("reload");
+	}
+
+	function deletes(){
+		var rows = $("#dg").datagrid("getSelections");
+		if(rows.length == 0){
+			$.messager.alert("提示","请选择要删除的友情链接","info");
+			return;
+		}
+		var str = "";
+		for(var i = 0; i < rows.length; i++){
+			str += rows[i].id + ",";
+		}
+		$.messager.confirm("警告", "你确定要删除这" + rows.length + "条友情链接吗？", function(r){
+			if(r){
+				$.ajax({
+					url:'../admin/link/delete',
+					type:'post',
+					data:{ids:str},
+					success:function(r){
+						if(r){
+							$.messager.alert("提示","删除成功", "info");
+							$("#dg").datagrid("reload");
+						}
+					}
+				});
+			}
+		});
+	}
+
+</script>
+</head>
+<body style="margin: 1px;">
+<table id="dg" toolbar="#tb" title="链接列表" fit="true" pagination="true" fitColumns="true" url="../admin/link/list" rownumbers="true" class="easyui-datagrid">
+	<thead>
+		<th field="cb" checkbox="true" align="center"></th>
+		<th field="name" width="50" align="center" >链接名称</th>
+		<th field="url" width="50" align="center" formatter="forUrl">链接地址</th>
+		<th field="sort" width="50" align="center">排序</th>
+	</thead>
+</table>
+<div id="tb">
+	<a href="javascript:add()" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增</a>
+	<a href="javascript:edit()" class="easyui-linkbutton" iconCls="icon-edit" plain="true">修改</a>
+	<a href="javascript:deletes()" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+	<br/>
+	&nbsp;&nbsp;<input id="s_name" name="s_name" class="easyui-textbox" label="友情链接：" data-options="labelWidth:72,prompt:'请输入要搜索的友情链接...',width:400" onkeydown="if(event.keyCode == 13) search()">
+	<a href="javascript:search()" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-search'" >搜索</a>
+</div>
+<div id="dlg" resizable="true" class="easyui-dialog" title="new link" buttons="#bt" iconCls="icon-edit" style="width:300px;height:220px" closed="true">
+	<form id="fm" method="post">
+		<table cellpadding="5px" cellspacing="10px">
+			<tr>
+				<td>名称:</td>
+				<td><input name="name" class="easyui-textbox" required></td>
+			</tr>
+			<tr>
+				<td>地址:</td>
+				<td><input name="url" class="easyui-textbox" validType="url" required></td>
+			</tr>
+			<tr>
+				<td>排序:</td>
+				<td><input name="sort" class="easyui-numberbox" required></td>
+			</tr>
+		</table>
+	</form>
+</div>
+<div id="bt">
+	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save" onclick="save()">保存</a>
+	<a href="javascript:cancel()" class="easyui-linkbutton" iconCls="icon-cancel">取消</a>
+</div>
+</body>
+</html>

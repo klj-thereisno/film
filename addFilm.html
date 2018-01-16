@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>电影信息添加页面</title>
+<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.5.3/themes/default/easyui.css"></link>
+<link rel="stylesheet" type="text/css" href="/static/jquery-easyui-1.5.3/themes/icon.css"></link>
+<script type="text/javascript" src="/static/jquery-easyui-1.5.3/jquery.min.js"></script>
+<script type="text/javascript" src="/static/jquery-easyui-1.5.3/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/static/jquery-easyui-1.5.3/locale/easyui-lang-zh_CN.js"></script>
+
+<script type="text/javascript" src="/static/ckeditor/ckeditor.js"></script>
+<script type="text/javascript">
+
+	function save(){
+		$("#ff").form("submit",{
+			url:'../admin/film',
+			onSubmit:function(){
+				if(flag){
+					$.messager.alert("提示","电影已存在，请上传新的电影","info");
+					return false;
+				}
+				if($("[name=name]").val().trim() == ''){
+					$.messager.alert("提示","请输入电影名称","info");
+					return false;
+				}
+				var site = $("#site");
+				if($("#site").combobox("getValue") == ''){
+					$.messager.alert("提示","请选择影片来源","info");
+					return false;
+				}
+				if($("#site").combobox("getValue") != ''){
+					if(site.combobox("getText") == site.combobox("getValue")){
+						$.messager.alert("提示","请对通过输入进行查找到的影片来源<span style='color:red'>进行选中</span>","info");
+						return false;
+					}
+				}
+				if($("#url").textbox("getValue") == ''){
+					$.messager.alert("提示","请粘贴影片详细地址","info");
+					return false;
+				}
+				if($("[name=title]").val().trim() == ''){
+					$.messager.alert("提示","请输入标题","info");
+					return false;
+				}
+				if($("#imageFile").textbox("getValue") == '' && $("#imageFile").textbox("getText") == ''){
+					$.messager.alert("提示","请上传电影海报","info");
+					return false;
+				}
+				if(CKEDITOR.instances.content.getData() == ''){
+					$.messager.alert("提示","请输入内容","info");
+					return false;
+				}
+			},
+			success:function(r){
+				if(r == "success"){
+					if($("#id").val() == 0) // == ""
+						$.messager.alert("提示","发布成功","info");
+					else
+						$.messager.alert("提示","修改成功","info");
+				}else{
+					$.messager.alert("提示","发布失败，原因未知，请联系管理员","error");
+				}
+				resetValue();
+			}
+		});
+	}
+	
+	var flag = false;
+	
+	$(function(){
+		$("#name").textbox({
+			onChange:function(n, o){
+				if($("#id").val() == 0){
+					$.ajax({
+						url:'/admin/film/check',
+						data:{name:n},
+						success:function(r){
+							if(r != 'success'){
+								$.messager.alert("提示",n.fontcolor("red") + "已存在，不可重复添加，\n(可追加如：高清、超清等)","info");
+								flag = true;
+							}else
+								flag = false;
+						}
+					});
+				}
+			}
+		})
+	});
+	
+	function resetValue(){
+		$("#ff").form("clear");
+		$('#hot').prop('checked',true);
+		CKEDITOR.instances.content.setData("");
+	}
+	
+</script>
+</head>
+<body style="background-color: #f4f4f4">
+<form id="ff" method="post" enctype="multipart/form-data" style="padding: 20px 0 0 15px">
+    <div style="margin-bottom:20px">
+    	<input id="id" name="id" type="hidden">
+        <input class="easyui-textbox" id="name" name="name" style="width:40%" data-options="label:'电影名称：'"><small><small>(后台检查是否存在)</small></small>
+    </div>
+    <div style="margin-bottom:20px">
+        <select class="easyui-combobox" id="site" name="webSite.id" style="width:40%" data-options="label:'来源：',url:'../admin/site',valueField:'id',textField:'name',method:'get',mode:'remote',delay:50"></select><small><small>(可手动输入搜索，搜到后请进行选中)</small></small>
+    </div>
+    <div style="margin-bottom:20px">
+        <input class="easyui-textbox" id="url" name="url" style="width:60%" data-options="label:'url：',validType:'url'">
+    </div>
+    <div style="margin-bottom:20px">
+        <input class="easyui-textbox" id="title" name="title" style="width:80%" data-options="label:'电影标题：'">
+    </div>
+    <div style="margin-bottom:20px">
+    	<input type="hidden" name="imageName" id="imageName">
+        <input class="easyui-filebox" id="imageFile" name="imageFile" style="width:40%" data-options="label:'电影海报：',accept: 'image/*'">
+    </div>
+    <div style="margin-bottom:20px">
+    	<label>是否热门：</label>
+        <input type="radio" value="1" name="hot" checked="checked" id="hot"/>是&nbsp;
+		<input type="radio" value="0" name="hot" id="unhot"/>否
+	</div>
+	<div style="margin-bottom:20px">
+		<div>
+			<div style="width:7.5%;vertical-align:top; display: inline-block ;">
+				内容：
+			</div>
+			<div style="width:92%;display: inline-block ;">
+				<textarea id="content" name="content"></textarea>
+			</div>
+		</div>
+    </div>
+    <div style="margin-bottom:20px">
+    	<a href="javascript:save()" class="easyui-linkbutton" style="width:91%;height: 80px;margin-left: 90px;"><span style="font-size: 2.5em">发布<div style="color: red;font-size: small;">(注：最新发布的最后一个电影在前台侧边栏展示时收录站点名为null，不解，进行任何触发application域(增删改)的操作即可恢复正常)</div></span></a>
+   	</div>
+</form>
+<script type="text/javascript">
+	CKEDITOR.replace("content");
+	
+	/* var searchURL = window.location.search;  
+	searchURL = searchURL.substring(1, searchURL.length);  
+	var targetPageId = searchURL.split("&")[0].split("=")[1]; */  
+	var id = window.location.search.match(/\d+/);
+	
+	if(id){
+		$.ajax({
+			url:'../admin/film?id=' + id,
+			dataType:'json',
+			success:function(r){
+				$("#id").val(id);
+				$("#name").textbox("setValue",r.name);
+				$("#site").combobox("setValue",r.webSite.id);
+				$("#url").textbox("setValue",r.url);
+				$("#title").textbox("setValue",r.title);
+				$("#imageName").val(r.imageName);
+				$("#imageFile").textbox("setText",r.imageName);
+				if(r.hot)
+					$('#hot').prop('checked',true);
+				else
+					$('#unhot').prop('checked',true);
+				CKEDITOR.instances.content.setData(r.content);
+			}
+		});
+	}
+</script>
+</body>
+</html>
