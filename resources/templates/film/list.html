@@ -1,0 +1,35 @@
+<meta charset="UTF-8"></meta>
+<div id="f">
+	<div class="data_list">
+		<div class="data_list_title">
+			<span class="glyphicon glyphicon-th" aria-hidden="true"></span>
+			收录电影列表
+		</div>
+		<div>
+			<table class="table table-hover">
+				<tr>
+					<th>编号</th>
+					<th>收录时间</th>
+					<th>电影名称</th>
+					<th>来源</th>
+				</tr>
+				<!--/*/ <th:block th:each="film:${filmList}"> /*/-->
+				<tr th:class="${filmStat.odd} ? 'info'">
+					<td><span th:text="${filmStat.count}"></span></td>
+					<td><span th:text="${#dates.format(film.publishDate,'yyyy-MM-dd HH:mm')}"></span></td>
+					<td><span><a th:text="${film.name}" th:title="${film.title}" th:href="|/film/${film.id}|"></a></span></td>
+					<td th:object="${film.webSite}">
+						<span><a th:text="*{name}" th:title="*{name}" th:href="*{url}"></a></span>
+					</td>
+				</tr>
+				<!--/*/ </th:block> /*/-->
+			</table>
+			<!-- <ul id="allList">
+			  <li th:each="film,state:${filmList}"><span><a th:href="${'/film/' + film.id}" th:title="${film.title}" th:text="${state.count + '、' + film.title + '(' + film.webSite.name + ')'}"></a></span><span th:text="${#dates.format(film.publishDate, 'yyyy-MM-dd HH:mm:ss')}" ></span></li>
+			</ul> -->
+		</div>
+	</div>
+	
+	<div id="page" th:utext="${pageCode}">
+	</div>
+</div>

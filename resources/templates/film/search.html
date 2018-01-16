@@ -1,0 +1,30 @@
+<meta charset="UTF-8"></meta>
+<div id="f">
+	<div class="data_list">
+		<div class="data_list_title">
+			<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+			搜索结果
+		</div>
+		<span th:utext="|搜索${nameDeco}共搜索到${totalDeco}个结果|"></span>
+		<div class="datas lImageDatas">
+			<ul class="imageUl" th:if="${total != 0}">
+		  	  <li class="imageLi" th:each="film:${filmList}">
+		  	  	<a target="_blank" th:href="'/film/'+${film.id}" th:title="${film.name}">
+		  	  		<img class="indexFilm" th:src="'/static/uploadImages/'+${film.imageName}"></img>
+					<p th:text="${film.name}"></p>
+		  	 	 	<!-- <div th:object="${film}" style="width:150px">
+			  	 	 	<p th:text="${#strings.substring(film.name, 0, (#strings.length(film.name) &gt; 11 ? 11 : #strings.length(film.name))}"></p>
+		  	 	 	</div> -->
+		  	  	</a>
+			  </li>
+			</ul>
+			
+			<div th:if="${total == 0}">
+				-_-!!!没有查找到结果，请换个词搜搜看
+			</div>
+		</div>
+	</div>
+	
+	<div id="page" th:if="${total != 0}" th:utext="${pageCode}">
+	</div>
+</div>

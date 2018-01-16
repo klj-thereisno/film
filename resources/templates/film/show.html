@@ -1,0 +1,37 @@
+<meta charset="UTF-8"></meta>
+<div id="f">
+	<div class="data_list">
+		<div class="data_list_title">
+			<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+			电影详细信息
+		</div>
+		<div th:utext="${navCode}"></div>
+		<div>
+			<div class="film_title"><h3><strong th:text="${film.name}"></strong></h3></div>
+		</div>
+		<div class="film_publishDate">
+			发布时间：<font th:text="${#dates.format(film.publishDate,'yyyy-MM-dd HH:mm:ss')}"></font>
+		</div>
+		<div class="film_content" th:utext="${film.content}">
+		</div>
+		<a style="display:inline-block; color: red; margin:0 0 10px 85% ;font-size: 16px" th:text="转到目标地址" th:href="${film.url}" target="_blank"></a>
+		<div class="film_lastAndNextPage" th:utext="${pageCode}"></div>
+	</div>
+	
+	<div class="data_list">
+		<div class="data_list_title">
+			<span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
+			猜你喜欢
+		</div>
+		<div class="datas rImageDatas">
+			<ul class="imageUl">
+			  	  <li class="imageLi" th:each="film:${randList}">
+			  	  	<a target="_blank" th:href="${film.id}" th:title="${film.name}">
+			  	  		<img class="indexFilm" th:src="|/static/uploadImages/${film.imageName}|"></img>
+			  	 	 	<p th:text="${film.name}"></p>
+			  	  	</a>
+				  </li>
+			</ul>
+		</div>
+	</div>
+</div>

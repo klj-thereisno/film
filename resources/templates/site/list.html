@@ -1,0 +1,34 @@
+<meta charset="UTF-8"></meta>
+<div id="f">
+	<div class="data_list">
+		<div class="data_list_title">
+			<span class="glyphicon glyphicon-sort-by-order-alt" aria-hidden="true"></span>
+			收录网站列表
+		</div>
+		<div><table class="table table-hover">
+				<tr>
+					<th>编号</th>
+					<th>收录网站名称</th>
+					<th>收录电影总数</th>
+				</tr>
+				<!--/*/ <th:block th:each="site:${siteList}"> /*/-->
+				<tr th:class="${siteStat.odd} ? 'info'">
+					<td><span th:text="${siteStat.count}"></span></td>
+					<td><span><a th:text="${site.name}" th:title="${site.name}" th:href="|/site/${site.id}|"></a></span></td>
+					<td>
+						<span th:text="${site.url} + '部'"></span>
+					</td>
+				</tr>
+				<!--/*/ </th:block> /*/-->
+			</table>
+			<!-- <ul style="list-style-type: square;">
+		  	  <li style="margin-top: 20px;font-family: monospace;font-size: large;" th:each="site:${siteList}">
+		  	  	<a th:href="${site.id}" th:title="${site.name}" th:text="|${site.name}(${site.url})|"></a>
+			  </li>
+			</ul> -->
+		</div>
+	</div>
+	
+	<div id="page" th:utext="${pageCode}">
+	</div>
+</div>

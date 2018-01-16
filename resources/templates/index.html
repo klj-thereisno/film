@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"></meta>
+<!-- if? if? if? if?... -->
+<title th:text="(${film} ? (${#strings.trim(film.name)} == '' ? '' : ${film.name + '-'}) : (${siteList} ? '网站收录列表-' : ${filmList != null ? (#lists.size(filmList) == 12 ? '' : (total == null ? (#lists.size(filmList) &gt; 0 ? filmList.get(0).webSite.name + '-' : '') : '搜索结果-')) : ''})) + '搜搜电影网'"></title>
+<link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css"/>
+<link rel="stylesheet" href="/static/css/film.css"/>
+<script th:inline="javascript" type="text/javascript">
+	/*<![CDATA[*/  
+	window.onload=function(){
+		var error=[[${error}]];
+		if(error!=null){
+			alert(error);
+		}
+	}
+	/*]]>*/  
+</script>
+</head>
+<body>
+<div class="container">
+	<div th:include="common/head :: #h"></div>
+	<div th:include="common/menu :: #m"></div>
+	<div class="row">
+		<div class="col-lg-8">
+			<div th:if="${mainPage == null}">
+				<div class="data_list">
+					<div class="data_list_title">
+					<img src="/static/images/hot_icon.png"/>
+					热门电影
+					</div>
+					<div class="datas imageDatas">
+						<ul class="imageUl">
+						  	  <li class="imageLi" th:each="film:${application.newHotShow}">
+						  	  	<a target="_blank" th:href="|/film/${film.id}|" th:title="|${film.name}|">
+						  	  		<img class="indexFilm" th:src="|/static/uploadImages/${film.imageName}|"/>
+						  	 	 	<p th:text="${film.name}"></p>
+						  	  	</a>
+							  </li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div th:if="${mainPage}">
+				<div th:replace="${mainPage} :: #f"></div>
+			</div>
+		</div>
+		<div th:include="common/slide :: #s"></div>
+	</div>
+	<div th:replace="common/foot :: #f"></div>
+</div>
+</body>
+</html>
